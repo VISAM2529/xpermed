@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@layer theme {
+  :root {
+    --foreground-rgb: 15, 23, 42;
+    /* Slate 900 */
+    --background-start-rgb: 248, 250, 252;
+    /* Slate 50 */
+    --background-end-rgb: 255, 255, 255;
+    /* White */
+
+    --primary: #3b82f6;
+    /* Blue 500 */
+    --primary-hover: #2563eb;
+
+    --sidebar-w: 260px;
+    --header-h: 64px;
+  }
+}
+
+@layer base {
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(to bottom,
+        rgb(var(--background-start-rgb)),
+        rgb(var(--background-end-rgb))) fixed;
+  }
+}
+
+/* Custom Soft Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  /* Slate 300 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  /* Slate 400 */
+}
+
+/* Universal Soft Card style */
+@layer components {
+  .soft-card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-100 transition-all duration-200 hover:shadow-md;
+  }
+}
