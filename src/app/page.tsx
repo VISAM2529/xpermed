@@ -157,7 +157,7 @@ export default function LandingPage() {
                         {/* Mock UI Body */}
                         <div className="bg-slate-950/80 overflow-hidden relative">
                             <img
-                                src="/dashboard.jpeg"
+                                src="/dashboard.png"
                                 alt="XperMed Dashboard"
                                 className="w-full h-auto object-cover opacity-90"
                             />
