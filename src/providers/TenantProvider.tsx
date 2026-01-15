@@ -7,6 +7,7 @@ interface Tenant {
     name: string;
     subdomain: string;
     status: string;
+    type: 'PHARMACY' | 'DISTRIBUTOR';
 }
 
 interface User {
@@ -20,6 +21,7 @@ interface TenantContextType {
     user: User | null;
     setSession: (tenant: Tenant, user: User) => void;
     clearSession: () => void;
+    logout: () => void;
     isLoading: boolean;
 }
 
@@ -36,8 +38,14 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
         const storedUser = localStorage.getItem('user_data');
 
         if (storedTenant && storedUser) {
-            setTenant(JSON.parse(storedTenant));
+            const parsedTenant = JSON.parse(storedTenant);
+            setTenant(parsedTenant);
             setUser(JSON.parse(storedUser));
+
+            // Ensure cookie is synced with the correct ID (ObjectId)
+            if (parsedTenant.id) {
+                document.cookie = `x-tenant-id=${parsedTenant.id}; path=/; max-age=86400; SameSite=Strict`;
+            }
         }
         setIsLoading(false);
     }, []);
@@ -48,7 +56,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('tenant_data', JSON.stringify(newTenant));
         localStorage.setItem('user_data', JSON.stringify(newUser));
         // Also set cookie for middleware via document.cookie for immediate availability
-        document.cookie = `x-tenant-id=${newTenant.subdomain}; path=/; max-age=86400; SameSite=Strict`;
+        document.cookie = `x-tenant-id=${newTenant.id}; path=/; max-age=86400; SameSite=Strict`;
     };
 
     const clearSession = () => {
@@ -60,7 +68,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <TenantContext.Provider value={{ tenant, user, setSession, clearSession, isLoading }}>
+        <TenantContext.Provider value={{ tenant, user, setSession, clearSession, logout: clearSession, isLoading }}>
             {children}
         </TenantContext.Provider>
     );

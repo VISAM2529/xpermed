@@ -36,10 +36,11 @@ export default function LoginPage() {
 
             // Set Session Context
             const tenantObj = {
-                id: 'session-id', // Placeholder or from API if available
-                name: data.user.tenant ? (data.user.tenant.charAt(0).toUpperCase() + data.user.tenant.slice(1) + ' Pharmacy') : 'Pharmacy',
-                subdomain: data.user.tenant,
-                status: 'approved'
+                id: data.tenant?._id || 'session-id',
+                name: data.tenant?.name || 'Pharmacy',
+                subdomain: data.tenant?.subdomain || '',
+                status: data.tenant?.onboardingStatus || 'approved',
+                type: data.tenant?.type || 'PHARMACY'
             };
 
             const userObj = {
@@ -49,8 +50,16 @@ export default function LoginPage() {
             };
 
             setSession(tenantObj, userObj);
+            localStorage.setItem('token', data.token); // Save token for API calls
 
-            router.push('/dashboard');
+            // Redirect based on Type
+            if (userObj.role === 'salesman') {
+                router.push('/salesman/orders');
+            } else if (tenantObj.type === 'DISTRIBUTOR') {
+                router.push('/distributor');
+            } else {
+                router.push('/dashboard');
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {

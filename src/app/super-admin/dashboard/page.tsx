@@ -24,14 +24,21 @@ export default function SuperAdminDashboard() {
     };
 
     const handleStatusChange = async (tenantId: string, status: 'approved' | 'rejected') => {
+        if (!tenantId) return;
         try {
-            const res = await fetch('/api/admin/tenants', {
+            const res = await fetch(`/api/admin/tenants/${tenantId}/approve`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tenantId, status })
+                body: JSON.stringify({ status })
             });
-            if (res.ok) fetchTenants();
+            if (res.ok) {
+                fetchTenants();
+            } else {
+                const err = await res.json();
+                alert(`Failed: ${err.error || 'Update failed'}`);
+            }
         } catch (error) {
+            console.error('Update error:', error);
             alert('Failed to update status');
         }
     };
@@ -78,8 +85,8 @@ export default function SuperAdminDashboard() {
                                             </td>
                                             <td className="p-3">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${t.onboardingStatus === 'approved' ? 'bg-green-100 text-green-700' :
-                                                        t.onboardingStatus === 'rejected' ? 'bg-red-100 text-red-700' :
-                                                            'bg-yellow-100 text-yellow-700'
+                                                    t.onboardingStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                                                        'bg-yellow-100 text-yellow-700'
                                                     }`}>
                                                     {t.onboardingStatus.toUpperCase()}
                                                 </span>

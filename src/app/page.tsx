@@ -181,39 +181,247 @@ export default function LandingPage() {
                         <p className="text-slate-400 text-xl max-w-2xl">Usually, "powerful" means "complicated". Not here. XperMed is the first ERP that feels like a consumer app.</p>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]">
-                        {[
-                            { title: "Lightning POS", desc: "Process sales in under 3 seconds.", icon: <Icons.Zap />, col: "md:col-span-2 md:row-span-2", color: "emerald", demo: true },
-                            { title: "Stock Insights", desc: "Auto-categorize short-expiry items.", icon: <Icons.Box />, col: "md:col-span-1 md:row-span-2", color: "blue", list: true },
-                            { title: "Real-time Data", desc: "Live profit/loss tracking.", icon: <Icons.Chart />, col: "md:col-span-1", color: "purple" },
-                            { title: "Doctor CRM", desc: "Track top prescribers.", icon: <Icons.User />, col: "md:col-span-1", color: "pink" }
-                        ].map((card, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                whileHover={{ scale: 1.02, y: -5 }}
-                                transition={{ duration: 0.4 }}
-                                viewport={{ once: true }}
-                                className={`${card.col} bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group hover:border-${card.color}-500/50 transition-colors`}
-                            >
-                                <div className={`absolute -right-10 -top-10 w-40 h-40 bg-${card.color}-500/10 rounded-full blur-3xl group-hover:bg-${card.color}-500/20 transition-all`}></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 auto-rows-fr">
+                        {/* --- Lightning POS (Storytelling Animation) --- */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover="hover"
+                            transition={{ duration: 0.4 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-2 xl:col-span-2 xl:row-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group hover:border-emerald-500/50 transition-colors flex flex-col min-h-[350px]"
+                        >
+                            <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
 
-                                <div className="relative z-10 h-full flex flex-col">
-                                    <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">{card.icon}</div>
-                                    <h3 className="text-2xl font-bold mb-2">{card.title}</h3>
-                                    <p className="text-slate-400 text-sm mb-6">{card.desc}</p>
+                            <div className="relative z-10 mb-8">
+                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6"><Icons.Zap /></div>
+                                <h3 className="text-2xl font-bold mb-2">Lightning POS</h3>
+                                <p className="text-slate-400 text-sm">Process sales in under 3 seconds.</p>
+                            </div>
 
-                                    {card.demo && (
-                                        <div className="mt-auto bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs opacity-60 group-hover:opacity-100 transition-opacity">
-                                            <div className="flex justify-between text-slate-500 mb-1"><span>ITEM</span><span>PRICE</span></div>
-                                            <div className="flex justify-between text-emerald-400 border-b border-slate-800 pb-1 mb-1"><span>Dolo 650</span><span>30.00</span></div>
-                                            <div className="flex justify-between text-white font-bold"><span>TOTAL</span><span>60.00</span></div>
-                                        </div>
-                                    )}
+                            {/* POS UI Simulation */}
+                            <div className="mt-auto bg-slate-950 border border-slate-800 rounded-xl overflow-hidden relative shadow-2xl">
+                                {/* Header */}
+                                <div className="h-8 bg-slate-900 border-b border-slate-800 flex items-center px-3 gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
                                 </div>
-                            </motion.div>
-                        ))}
+
+                                <div className="p-4 grid grid-cols-3 gap-4 h-48 relative">
+                                    {/* Product Grid */}
+                                    <div className="col-span-2 grid grid-cols-2 gap-2 content-start">
+                                        {[1, 2, 3, 4].map(Box => (
+                                            <div key={Box} className="h-10 bg-slate-800/50 rounded-lg flex items-center justify-center text-xs text-slate-500">Item {Box}</div>
+                                        ))}
+                                        {/* Target Item */}
+                                        <motion.div
+                                            className="h-10 bg-emerald-500/20 border border-emerald-500/50 rounded-lg flex items-center justify-center text-xs text-emerald-400 font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                                            variants={{ hover: { scale: [1, 0.95, 1], borderColor: ["#10b98180", "#10b981", "#10b98180"] } }}
+                                            transition={{ duration: 0.3, delay: 0.5 }}
+                                        >
+                                            Add Dolo
+                                        </motion.div>
+                                    </div>
+
+                                    {/* Bill Section */}
+                                    <div className="col-span-1 bg-slate-900 rounded-lg p-2 flex flex-col border border-slate-800">
+                                        <div className="text-[10px] text-slate-500 border-b border-slate-800 pb-1 mb-2">BILL #001</div>
+
+                                        {/* Dynamic List Item */}
+                                        <motion.div
+                                            className="flex justify-between text-[10px] text-emerald-400 mb-1"
+                                            variants={{ hover: { opacity: [0, 0, 1], x: [-10, 0] } }}
+                                            transition={{ duration: 0.4, delay: 0.8 }}
+                                        >
+                                            <span>Dolo</span><span>30</span>
+                                        </motion.div>
+
+                                        <div className="mt-auto pt-2 border-t border-slate-800">
+                                            <div className="flex justify-between text-[10px] text-white font-bold">
+                                                <span>Total</span>
+                                                <motion.span
+                                                    variants={{ hover: { opacity: [1, 0.5, 1], display: "inline" } }}
+                                                >
+                                                    <span className="hidden group-hover:inline">60</span><span className="group-hover:hidden">30</span>
+                                                </motion.span>
+                                            </div>
+                                            {/* Print Button */}
+                                            <motion.button
+                                                className="w-full mt-2 h-6 bg-emerald-500 text-slate-950 text-[10px] font-bold rounded flex items-center justify-center"
+                                                variants={{ hover: { scale: [1, 0.9, 1] } }}
+                                                transition={{ duration: 0.2, delay: 1.5 }}
+                                            >
+                                                PRINT
+                                            </motion.button>
+                                        </div>
+                                    </div>
+
+                                    {/* Animated Cursor */}
+                                    <motion.div
+                                        className="absolute w-3 h-3 text-white z-50 drop-shadow-lg pointer-events-none"
+                                        variants={{
+                                            hover: {
+                                                x: ["0%", "85%", "170%"],
+                                                y: ["0%", "50%", "150%"],
+                                                opacity: [0, 1, 1, 0]
+                                            }
+                                        }}
+                                        transition={{ duration: 2, times: [0, 0.4, 0.8], repeat: Infinity, repeatDelay: 1 }}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4V2z" /></svg>
+                                    </motion.div>
+
+                                    {/* Receipt Sliding Out */}
+                                    <motion.div
+                                        className="absolute top-0 right-4 w-24 bg-white text-slate-950 p-2 text-[8px] font-mono shadow-xl z-50 origin-top"
+                                        variants={{ hover: { minHeight: ["0px", "100px"], opacity: [0, 1] } }}
+                                        transition={{ duration: 0.8, delay: 1.8 }}
+                                    >
+                                        <div className="text-center font-bold border-b border-black pb-1 mb-1">RECEIPT</div>
+                                        <div className="flex justify-between"><span>Dolo</span><span>30.00</span></div>
+                                        <div className="flex justify-between"><span>Tax</span><span>2.50</span></div>
+                                        <div className="mt-2 text-center">THANK YOU</div>
+                                        <div className="mt-4 border-t border-black pt-1">BARCODE_|||</div>
+                                    </motion.div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* --- Stock Insights (Storytelling Animation) --- */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover="hover"
+                            transition={{ duration: 0.4 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-1 xl:col-span-1 xl:row-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group hover:border-blue-500/50 transition-colors flex flex-col min-h-[350px]"
+                        >
+                            <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
+
+                            <div className="relative z-10 mb-8">
+                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6"><Icons.Box /></div>
+                                <h3 className="text-2xl font-bold mb-2">Stock Insights</h3>
+                                <p className="text-slate-400 text-sm">Auto-categorize short-expiry items.</p>
+                            </div>
+
+                            {/* Stock Scanner Animation */}
+                            <div className="mt-auto bg-slate-950 border border-slate-800 rounded-xl p-4 relative overflow-hidden h-40 flex flex-col items-center justify-center shadow-lg">
+                                {/* Barcode Scanning Beam */}
+                                <motion.div
+                                    className="absolute top-0 left-0 w-full h-1 bg-rose-500/50 shadow-[0_0_15px_#f43f5e] z-20"
+                                    variants={{ hover: { top: ["0%", "100%"], opacity: [1, 0] } }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                />
+
+                                {/* Product Box */}
+                                <motion.div
+                                    className="w-20 h-24 bg-slate-800 rounded border border-slate-700 flex items-center justify-center relative mb-4"
+                                    variants={{ hover: { borderColor: ["#334155", "#f43f5e", "#f43f5e"] } }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <div className="text-[10px] text-slate-500 font-mono rotate-90">AUG-625</div>
+                                    <motion.div
+                                        className="absolute -top-2 -right-2 bg-rose-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold shadow-lg opacity-0"
+                                        variants={{ hover: { opacity: 1, scale: [0, 1.2, 1] } }}
+                                        transition={{ delay: 0.8 }}
+                                    >
+                                        EXP!
+                                    </motion.div>
+                                </motion.div>
+
+                                {/* Auto-Action Alert */}
+                                <motion.div
+                                    className="w-full bg-rose-500/10 border border-rose-500/20 rounded p-2 flex items-center gap-2"
+                                    variants={{ hover: { y: [20, 0], opacity: [0, 1] } }}
+                                    transition={{ delay: 1 }}
+                                >
+                                    <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                                    <span className="text-[10px] text-rose-400 font-bold">Moved to Return Bin</span>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+
+                        {/* --- Real-time Data (Storytelling Animation) --- */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover="hover"
+                            transition={{ duration: 0.4 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-1 xl:col-span-1 bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group hover:border-purple-500/50 transition-colors min-h-[350px] flex flex-col"
+                        >
+                            <div className="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all"></div>
+                            <div className="relative z-10 h-full flex flex-col">
+                                <motion.div variants={{ hover: { y: -5 } }} className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6"><Icons.Chart /></motion.div>
+                                <h3 className="text-2xl font-bold mb-2">Live Profit</h3>
+                                <p className="text-slate-400 text-sm mb-4">Real-time P&L tracking.</p>
+
+                                {/* Live Chart */}
+                                <div className="mt-auto relative h-20 w-full">
+                                    <svg className="w-full h-full overflow-visible">
+                                        <motion.path
+                                            d="M0 60 Q 30 50 50 30 T 100 10"
+                                            fill="none"
+                                            stroke="#a855f7"
+                                            strokeWidth="3"
+                                            strokeLinecap="round"
+                                            variants={{ hover: { pathLength: [0, 1] } }}
+                                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                                        />
+                                    </svg>
+                                    {/* Floating Tooltip */}
+                                    <motion.div
+                                        className="absolute top-0 right-0 bg-white text-slate-900 text-[10px] font-bold px-2 py-1 rounded shadow-lg"
+                                        variants={{ hover: { opacity: [0, 1], y: [10, 0] } }}
+                                        transition={{ delay: 1.2 }}
+                                    >
+                                        +₹2,450
+                                        <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45"></div>
+                                    </motion.div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* --- Doctor CRM (Storytelling Animation) --- */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover="hover"
+                            transition={{ duration: 0.4 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-1 xl:col-span-1 bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden group hover:border-pink-500/50 transition-colors min-h-[350px] flex flex-col"
+                        >
+                            <div className="absolute -right-10 -top-10 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl group-hover:bg-pink-500/20 transition-all"></div>
+                            <div className="relative z-10 h-full flex flex-col">
+                                <motion.div variants={{ hover: { scale: 1.1 } }} className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6"><Icons.User /></motion.div>
+                                <h3 className="text-2xl font-bold mb-2">Doctor CRM</h3>
+                                <p className="text-slate-400 text-sm mb-0">Track top prescribers.</p>
+
+                                {/* Profile Pop-up */}
+                                <div className="absolute bottom-0 left-0 right-0 p-4">
+                                    <motion.div
+                                        className="bg-slate-800 rounded-xl p-3 border border-slate-700 shadow-xl"
+                                        variants={{ hover: { y: [50, 0], opacity: [0, 1] } }}
+                                        transition={{ duration: 0.4 }}
+                                    >
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold text-xs">Dr</div>
+                                            <div>
+                                                <div className="text-white text-xs font-bold">Dr. Anjali</div>
+                                                <div className="text-[10px] text-emerald-400">Top Prescriber</div>
+                                            </div>
+                                        </div>
+                                        <motion.div
+                                            className="bg-emerald-500/10 text-emerald-400 text-[9px] px-2 py-1 rounded"
+                                            variants={{ hover: { scale: [0.9, 1], opacity: [0, 1] } }}
+                                            transition={{ delay: 0.4 }}
+                                        >
+                                            Generated ₹50k revenue this month
+                                        </motion.div>
+                                    </motion.div>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -254,6 +462,121 @@ export default function LandingPage() {
                                 </motion.div>
                             ))}
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- Distributor Section --- */}
+            <section id="distributors" className="py-24 bg-gradient-to-b from-slate-900/30 to-slate-950 border-b border-slate-800/50">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-6 tracking-wide uppercase">
+                                For Distributors
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                                Expand your <br />
+                                <span className="text-emerald-500">supply chain network.</span>
+                            </h2>
+                            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                                Connect directly with thousands of pharmacies. Receive orders in real-time, manage fleet delivery, and automate your entire B2B workflow.
+                            </p>
+
+                            <ul className="space-y-4 mb-10">
+                                {[
+                                    "Direct-to-Pharmacy ordering portal",
+                                    "Real-time inventory syncing",
+                                    "Automated fleet & delivery tracking",
+                                    "Instant credit ledger reconciliation"
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-slate-300">
+                                        <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                        </div>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <Link href="/signup">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-8 py-4 rounded-full bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-600/25 hover:bg-emerald-500 transition-colors"
+                                >
+                                    Become a Distributor Partner
+                                </motion.button>
+                            </Link>
+                        </motion.div>
+
+                        {/* Distributor Graphic/Mockup */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="relative"
+                        >
+                            <div className="absolute -inset-4 bg-emerald-500/20 rounded-full blur-3xl"></div>
+                            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative z-10 shadow-2xl">
+                                {/* Mock B2B Dashboard UI */}
+                                <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+                                    <div>
+                                        <div className="text-xs text-slate-500 uppercase font-mono">Incoming Orders</div>
+                                        <div className="text-2xl font-bold text-white">12 Pending</div>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                        <Icons.Box />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {[
+                                        { pharmacy: "Apollo Pharmacy", items: "250 Items", status: "Ready", value: "₹45,000" },
+                                        { pharmacy: "Wellness Forever", items: "120 Items", status: "Packing", value: "₹12,400" },
+                                        { pharmacy: "City Medicos", items: "50 Items", status: "Dispatched", value: "₹8,200" },
+                                    ].map((order, i) => (
+                                        <div key={i} className="flex items-center justify-between bg-slate-950/50 p-3 rounded-lg border border-slate-800/50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">
+                                                    {order.pharmacy[0]}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-slate-200">{order.pharmacy}</div>
+                                                    <div className="text-xs text-slate-500">{order.items}</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-mono text-emerald-400">{order.value}</div>
+                                                <div className="text-[10px] text-emerald-400 uppercase font-bold">{order.status}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Floating Live Map Element */}
+                                <motion.div
+                                    className="absolute -right-6 -bottom-6 bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-xl"
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                        <span className="text-xs font-bold text-slate-300">Live Delivery Tracking</span>
+                                    </div>
+                                    <div className="w-32 h-16 bg-slate-900 rounded-lg relative overflow-hidden opacity-50">
+                                        {/* Mock Map Lines */}
+                                        <svg className="w-full h-full stroke-slate-700" strokeWidth="1">
+                                            <path d="M0 10 Q 15 5 30 20 T 60 10" fill="none" />
+                                            <path d="M20 60 Q 40 40 60 50" fill="none" />
+                                        </svg>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -378,76 +701,111 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* --- Mega Footer --- */}
-            <footer className="bg-slate-950 border-t border-slate-900 pt-20 pb-10">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="grid md:grid-cols-4 gap-12 mb-16">
-                        {/* Brand Column */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            {/* --- Mega Footer (System Status Theme) --- */}
+            <footer className="bg-slate-950 border-t border-slate-900 pt-0 pb-10 relative overflow-hidden">
+                {/* Animated ECG Pulse Border */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-slate-900 overflow-hidden">
+                    <motion.div
+                        className="absolute h-[2px] w-20 bg-emerald-500 shadow-[0_0_10px_#10b981]"
+                        animate={{ left: ["-10%", "110%"] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    />
+                </div>
+
+                {/* Massive Watermark */}
+                <div className="absolute -bottom-20 -right-20 pointer-events-none opacity-5 select-none overflow-hidden">
+                    <span className="text-[15rem] font-bold text-white tracking-tighter whitespace-nowrap">XperMed</span>
+                </div>
+
+                <div className="max-w-7xl mx-auto px-6 pt-20 relative z-10">
+                    <div className="grid md:grid-cols-12 gap-12 mb-20">
+                        {/* Brand Column (System Status) */}
+                        <div className="md:col-span-4 space-y-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                                    <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                                 </div>
-                                <span className="text-xl font-bold text-white">XperMed</span>
+                                <div>
+                                    <span className="text-2xl font-bold text-white tracking-tight">XperMed</span>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                        </span>
+                                        <span className="text-xs text-emerald-400 font-mono uppercase tracking-wider">All Systems Normal</span>
+                                    </div>
+                                </div>
                             </div>
-                            <p className="text-slate-400 leading-relaxed text-sm">
-                                The operating system for modern pharmacies. Built with ❤️ in India for the world.
+                            <p className="text-slate-400 leading-relaxed text-sm max-w-sm">
+                                The operating system for modern healthcare. Connecting 500+ pharmacies to a global intelligence network.
                             </p>
-                            <div className="flex gap-4">
-                                {['Twitter', 'LinkedIn', 'Instagram'].map(social => (
+
+                            {/* Terminal-style Socials */}
+                            <div className="flex gap-3">
+                                {['TWITTER', 'LINKEDIN', 'GITHUB'].map(social => (
                                     <motion.a
                                         key={social}
                                         href="#"
-                                        whileHover={{ scale: 1.2, rotate: 10, backgroundColor: "#10b981", color: "white" }}
-                                        className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 transition-colors"
+                                        whileHover={{ y: -2 }}
+                                        className="px-3 py-1.5 border border-slate-800 rounded bg-slate-900/50 text-xs font-mono text-slate-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-colors"
                                     >
-                                        <div className="w-4 h-4 bg-current rounded-sm"></div>
+                                        {social}
                                     </motion.a>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Links Columns */}
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Product</h4>
-                            <ul className="space-y-4 text-sm text-slate-400">
-                                {['Features', 'Pricing', 'Inventory AI', 'GST Billing', 'Mobile App'].map(item => (
-                                    <li key={item}><Link href="#" className="hover:text-emerald-400 transition-colors">{item}</Link></li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Company</h4>
-                            <ul className="space-y-4 text-sm text-slate-400">
-                                {['About Us', 'Careers', 'Blog', 'Press Kit', 'Contact'].map(item => (
-                                    <li key={item}><Link href="#" className="hover:text-emerald-400 transition-colors">{item}</Link></li>
+                        {/* Navigation Grid - Designed like "Modules" */}
+                        <div className="md:col-span-2">
+                            <h4 className="text-slate-200 font-bold mb-6 flex items-center gap-2">
+                                <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
+                                Product
+                            </h4>
+                            <ul className="space-y-3 font-mono text-xs text-slate-500">
+                                {['Changlog v2.0', 'API Documentation', 'Status Page', 'Roadmap'].map(item => (
+                                    <li key={item}><Link href="#" className="hover:text-white transition-colors flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-500">&gt;</span>{item}</Link></li>
                                 ))}
                             </ul>
                         </div>
 
-                        {/* Newsletter */}
-                        <div>
-                            <h4 className="text-white font-bold mb-6">Stay Updated</h4>
-                            <p className="text-slate-400 text-sm mb-4">Get the latest pharmacy trends in your inbox.</p>
-                            <div className="flex gap-2">
-                                <input type="email" placeholder="Enter email" className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm text-white w-full focus:outline-none focus:border-emerald-500 transition-colors" />
+                        <div className="md:col-span-2">
+                            <h4 className="text-slate-200 font-bold mb-6 flex items-center gap-2">
+                                <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                                Company
+                            </h4>
+                            <ul className="space-y-3 font-mono text-xs text-slate-500">
+                                {['About XperMed', 'Careers (Hiring!)', 'Brand Assets', 'Legal'].map(item => (
+                                    <li key={item}><Link href="#" className="hover:text-white transition-colors flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500">&gt;</span>{item}</Link></li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Newsletter - Terminal Input Style */}
+                        <div className="md:col-span-4 bg-slate-900/30 rounded-2xl p-6 border border-slate-800/50">
+                            <h4 className="text-white font-bold mb-2">Initialize Update Stream</h4>
+                            <p className="text-slate-500 text-xs mb-4 font-mono">Join the developer preview list.</p>
+                            <div className="flex gap-0 relative group">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 font-mono text-sm pointer-events-none">$</span>
+                                <input
+                                    type="email"
+                                    placeholder="enter_email_address..."
+                                    className="bg-slate-950 border border-slate-700 rounded-l-lg pl-8 pr-4 py-3 text-sm text-white w-full focus:outline-none focus:border-emerald-500 transition-colors font-mono placeholder:text-slate-700"
+                                />
                                 <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="bg-emerald-500 text-slate-900 px-4 py-2 rounded-lg font-bold text-sm hover:bg-emerald-400 transition-colors"
+                                    whileHover={{ backgroundColor: "#10b981", color: "#020617" }}
+                                    className="bg-slate-800 border-y border-r border-slate-700 text-emerald-400 px-6 py-2 rounded-r-lg font-mono text-xs font-bold transition-all uppercase tracking-wide"
                                 >
-                                    →
+                                    Exec_
                                 </motion.button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs">
-                        <p>© 2026 XperMed Inc. All rights reserved.</p>
+                    <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-600 font-mono text-xs relative z-10">
+                        <p>SYSTEM_ID: XPM-2026 // SERVERS: MUMBAI-1</p>
                         <div className="flex gap-8">
-                            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-                            <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+                            <a href="#" className="hover:text-emerald-500 transition-colors">PRIVACY_PROTOCOL</a>
+                            <a href="#" className="hover:text-emerald-500 transition-colors">TERMS_OF_USE</a>
                         </div>
                     </div>
                 </div>

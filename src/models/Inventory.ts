@@ -13,6 +13,7 @@ export interface IProduct extends Document {
     isPrescriptionRequired: boolean;
     gstRate: number; // 0, 5, 12, 18, 28
     hsnCode?: string;
+    seasonality?: 'All Year' | 'Summer' | 'Winter' | 'Monsoon';
     isActive: boolean;
 }
 
@@ -29,13 +30,15 @@ const ProductSchema = new Schema<IProduct>(
         isPrescriptionRequired: { type: Boolean, default: false },
         gstRate: { type: Number, default: 0 },
         hsnCode: String,
+        seasonality: { type: String, enum: ['All Year', 'Summer', 'Winter', 'Monsoon'], default: 'All Year' },
         isActive: { type: Boolean, default: true },
     },
     { timestamps: true }
 );
 
 // Compound index for unique SKU per tenant
-ProductSchema.index({ tenantId: 1, sku: 1 }, { unique: true, sparse: true });
+// Compound index for unique SKU per tenant (only if SKU exists and is a string)
+ProductSchema.index({ tenantId: 1, sku: 1 }, { unique: true, partialFilterExpression: { sku: { $type: "string" } } });
 
 
 // --- Batch Schema (Inventory) ---

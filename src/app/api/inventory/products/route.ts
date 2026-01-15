@@ -4,23 +4,32 @@ import { Product } from '@/models/Inventory';
 import { getSubdomain } from '@/lib/tenant/context';
 import { Tenant } from '@/models/TenantUser';
 
+import Link from 'next/link'; import mongoose from 'mongoose';
+
 // GET: List Products for Tenant
 export async function GET(req: NextRequest) {
     await dbConnect();
     const tenantIdHeader = req.headers.get('x-tenant-id');
-    const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
 
-    if (!tenant) {
-        // Fallback for demo if needed
-        // return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+    let tenantId;
+
+    if (tenantIdHeader && mongoose.Types.ObjectId.isValid(tenantIdHeader)) {
+        tenantId = new mongoose.Types.ObjectId(tenantIdHeader);
+    } else if (tenantIdHeader) {
+        const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
+        if (tenant) tenantId = tenant._id;
+    }
+
+    if (!tenantId) {
+        // STRICT SECURITY: Do NOT return all products if tenant is unknown
+        return NextResponse.json({ products: [] });
     }
 
     try {
         const { searchParams } = new URL(req.url);
         const search = searchParams.get('search');
 
-        let matchStage: any = {};
-        if (tenant) matchStage.tenantId = tenant._id;
+        let matchStage: any = { tenantId };
 
         if (search) {
             matchStage.name = { $regex: search, $options: 'i' };
@@ -73,13 +82,20 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         const tenantIdHeader = req.headers.get('x-tenant-id');
-        const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
+        let tenantId;
 
-        if (!tenant) return NextResponse.json({ error: 'Tenant ID missing' }, { status: 400 });
+        if (tenantIdHeader && mongoose.Types.ObjectId.isValid(tenantIdHeader)) {
+            tenantId = tenantIdHeader;
+        } else {
+            const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
+            if (tenant) tenantId = tenant._id;
+        }
+
+        if (!tenantId) return NextResponse.json({ error: 'Tenant ID missing' }, { status: 400 });
 
         const product = await Product.create({
             ...body,
-            tenantId: tenant._id,
+            tenantId,
         });
 
         return NextResponse.json({ success: true, product });

@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, Button, Input } from '@/components/ui/Base';
 import { useToast } from '@/components/ui/Toast';
 import { TableSkeleton } from '@/components/ui/Skeletons';
+import ExpiryPredictionWidget from './ExpiryPredictionWidget';
+import ExpiryHeatmap from './ExpiryHeatmap';
+import DemandPredictionWidget from './DemandPredictionWidget';
 
 // --- Icons ---
 const Icons = {
@@ -20,6 +23,12 @@ export default function InventoryModule() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [products, setProducts] = useState<any[]>([]);
     const [batches, setBatches] = useState<any[]>([]);
+
+    // Prediction State
+    const [predictionData, setPredictionData] = useState<{ riskItems: any[], heatmapData: any[] }>({ riskItems: [], heatmapData: [] });
+    const [loadingPredictions, setLoadingPredictions] = useState(false);
+    const [predictionSubTab, setPredictionSubTab] = useState('expiry'); // 'expiry' | 'demand'
+
     const [loading, setLoading] = useState(true);
 
     // Form State
@@ -28,6 +37,12 @@ export default function InventoryModule() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (activeTab === 'predictions' && predictionData.riskItems.length === 0) {
+            fetchPredictions();
+        }
+    }, [activeTab]);
 
     async function fetchData() {
         try {
@@ -44,6 +59,23 @@ export default function InventoryModule() {
             showToast('Failed to load inventory data', 'error');
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function fetchPredictions() {
+        setLoadingPredictions(true);
+        try {
+            const res = await fetch('/api/inventory/expiry-prediction');
+            const data = await res.json();
+            if (res.ok) {
+                setPredictionData(data);
+            } else {
+                showToast('Failed to load predictions', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingPredictions(false);
         }
     }
 
@@ -75,6 +107,7 @@ export default function InventoryModule() {
     }
 
     if (loading) return (
+        // ... (Loading Skeleton) ...
         <div className="space-y-8">
             <div className="flex justify-between items-end">
                 <div>
@@ -110,7 +143,17 @@ export default function InventoryModule() {
                         >
                             Batches (Stock)
                         </button>
+                        <button
+                            onClick={() => setActiveTab('predictions')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'predictions' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        >
+                            <div className="flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                                Predictions
+                            </div>
+                        </button>
                     </div>
+                    {/* ... (Add Product Button) ... */}
                     <button
                         onClick={() => setShowAddModal(true)}
                         className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20"
@@ -123,21 +166,53 @@ export default function InventoryModule() {
             {/* Main Content */}
             <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 min-h-[500px]">
                 {/* Search & Filter Bar */}
-                <div className="flex justify-between items-center mb-6">
-                    <div className="relative w-full max-w-sm">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Icons.Search /></span>
-                        <input
-                            type="text"
-                            placeholder={`Search ${activeTab === 'products' ? 'products' : 'batches'}...`}
-                            className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 placeholder:text-slate-400 transition-all font-medium"
-                        />
+                {activeTab !== 'predictions' && (
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="relative w-full max-w-sm">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Icons.Search /></span>
+                            <input
+                                type="text"
+                                placeholder={`Search ${activeTab === 'products' ? 'products' : 'batches'}...`}
+                                className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 placeholder:text-slate-400 transition-all font-medium"
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {activeTab === 'products' ? (
                     <ProductTable products={products} />
-                ) : (
+                ) : activeTab === 'batches' ? (
                     <BatchTable batches={batches} />
+                ) : (
+                    <div className="space-y-6 animate-in fade-in zoom-in duration-300">
+                        {/* Sub-Tabs for Predictions */}
+                        <div className="flex gap-4 border-b border-slate-100 pb-1">
+                            <button
+                                onClick={() => setPredictionSubTab('expiry')}
+                                className={`text-sm font-bold pb-2 transition-all ${predictionSubTab === 'expiry' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                Expiry Risks
+                            </button>
+                            <button
+                                onClick={() => setPredictionSubTab('demand')}
+                                className={`text-sm font-bold pb-2 transition-all ${predictionSubTab === 'demand' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                Demand & Auto-Reorder
+                            </button>
+                        </div>
+
+                        {predictionSubTab === 'expiry' ? (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-300">
+                                <ExpiryHeatmap data={predictionData.heatmapData} loading={loadingPredictions} />
+                                <div className="w-full h-px bg-slate-100" />
+                                <ExpiryPredictionWidget riskItems={predictionData.riskItems} loading={loadingPredictions} />
+                            </div>
+                        ) : (
+                            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                <DemandPredictionWidget />
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
 

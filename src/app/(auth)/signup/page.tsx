@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function RegisterPage() {
     const router = useRouter();
     const [step, setStep] = useState(1);
+    const [registrationType, setRegistrationType] = useState<'PHARMACY' | 'DISTRIBUTOR'>('PHARMACY');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [direction, setDirection] = useState(0); // For slide animation direction
@@ -20,7 +21,8 @@ export default function RegisterPage() {
         email: '',
         password: '',
         phone: '',
-        address: ''
+        address: '',
+        location: null as null | { type: 'Point', coordinates: [number, number] },
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,16 +50,39 @@ export default function RegisterPage() {
         setStep(1);
     };
 
+    // Capture Location for Distributors
+    const captureLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setFormData(prev => ({
+                        ...prev,
+                        location: {
+                            type: 'Point',
+                            coordinates: [position.coords.longitude, position.coords.latitude]
+                        }
+                    }));
+                },
+                (err) => console.warn("Location denied:", err)
+            );
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
+            const payload = {
+                ...formData,
+                tenantType: registrationType
+            };
+
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json();
@@ -143,8 +168,41 @@ export default function RegisterPage() {
                                     exit="exit"
                                     transition={{ duration: 0.3 }}
                                 >
-                                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-900">Tell us about your pharmacy</h1>
-                                    <p className="text-slate-500 mb-8">We'll set up your customized dashboard.</p>
+                                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-900">
+                                        {registrationType === 'PHARMACY' ? 'Tell us about your pharmacy' : 'join as a Distributor'}
+                                    </h1>
+                                    <p className="text-slate-500 mb-6">
+                                        {registrationType === 'PHARMACY'
+                                            ? "We'll set up your customized dashboard."
+                                            : "Connect with pharmacies and manage B2B orders."}
+                                    </p>
+
+                                    {/* Type Toggle */}
+                                    <div className="flex bg-slate-100 p-1 rounded-xl mb-8">
+                                        <button
+                                            type="button"
+                                            onClick={() => setRegistrationType('PHARMACY')}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${registrationType === 'PHARMACY'
+                                                    ? 'bg-white text-slate-900 shadow-sm'
+                                                    : 'text-slate-500 hover:text-slate-700'
+                                                }`}
+                                        >
+                                            Pharmacy Owner
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setRegistrationType('DISTRIBUTOR');
+                                                captureLocation(); // Auto-ask permission on switch
+                                            }}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${registrationType === 'DISTRIBUTOR'
+                                                    ? 'bg-white text-slate-900 shadow-sm'
+                                                    : 'text-slate-500 hover:text-slate-700'
+                                                }`}
+                                        >
+                                            Distributor
+                                        </button>
+                                    </div>
 
                                     <div className="space-y-5">
                                         <div>

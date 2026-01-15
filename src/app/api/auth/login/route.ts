@@ -56,12 +56,13 @@ export async function POST(req: NextRequest) {
         // 5. Set Cookie
         const response = NextResponse.json({
             message: 'Login successful',
+            token, // Return token for client-side use
             user: {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                tenant: user.tenantId.subdomain
-            }
+            },
+            tenant: user.tenantId // Return full tenant object
         });
 
         response.cookies.set('token', token, {

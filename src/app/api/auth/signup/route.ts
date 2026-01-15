@@ -17,7 +17,10 @@ export async function POST(req: NextRequest) {
             phone,
             gstNumber,
             licenseNumber,
-            address
+            address,
+            tenantType, // 'PHARMACY' | 'DISTRIBUTOR'
+            location, // { type: 'Point', coordinates: [lng, lat] }
+            distributorSettings
         } = body;
 
         // Validation
@@ -44,6 +47,9 @@ export async function POST(req: NextRequest) {
             address,
             gstNumber,
             licenseNumber,
+            type: tenantType || 'PHARMACY',
+            location,
+            distributorSettings: tenantType === 'DISTRIBUTOR' ? distributorSettings : undefined,
             onboardingStatus: 'pending', // Explicitly pending
             subscriptionStatus: 'trialing',
             subscriptionExpiry: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days trial starts but access blocked until approval

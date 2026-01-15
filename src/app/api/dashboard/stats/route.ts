@@ -4,11 +4,21 @@ import { Order } from '@/models/Commerce';
 import { Product, Batch } from '@/models/Inventory';
 import { Tenant } from '@/models/TenantUser';
 
+import mongoose from 'mongoose';
+
 export async function GET(req: NextRequest) {
     await dbConnect();
     const tenantIdHeader = req.headers.get('x-tenant-id');
-    const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
-    if (!tenant) return NextResponse.json({ error: 'Tenant missing' }, { status: 400 });
+
+    let tenantId;
+    if (tenantIdHeader && mongoose.Types.ObjectId.isValid(tenantIdHeader)) {
+        tenantId = new mongoose.Types.ObjectId(tenantIdHeader);
+    } else if (tenantIdHeader) {
+        const tenant = await Tenant.findOne({ subdomain: tenantIdHeader });
+        if (tenant) tenantId = tenant._id;
+    }
+
+    if (!tenantId) return NextResponse.json({ error: 'Tenant missing' }, { status: 400 });
 
     try {
         const today = new Date();
@@ -22,7 +32,7 @@ export async function GET(req: NextRequest) {
         const salesTodayPromise = Order.aggregate([
             {
                 $match: {
-                    tenantId: tenant._id,
+                    tenantId,
                     createdAt: { $gte: startOfDay }
                 }
             },
@@ -33,7 +43,7 @@ export async function GET(req: NextRequest) {
         const salesMonthPromise = Order.aggregate([
             {
                 $match: {
-                    tenantId: tenant._id,
+                    tenantId,
                     createdAt: { $gte: startOfMonth }
                 }
             },
@@ -44,7 +54,7 @@ export async function GET(req: NextRequest) {
         // Adjust 'paymentStatus' or 'status' based on your verified Schema. 
         // Using 'paymentStatus' as proxy for 'Pending' logic if 'status' field isn't explicit in OrderSchema View.
         const pendingOrdersPromise = Order.countDocuments({
-            tenantId: tenant._id,
+            tenantId,
             $or: [{ paymentStatus: 'Pending' }, { status: 'Pending' }]
         });
 
@@ -52,7 +62,7 @@ export async function GET(req: NextRequest) {
         const salesYearlyPromise = Order.aggregate([
             {
                 $match: {
-                    tenantId: tenant._id,
+                    tenantId,
                     createdAt: { $gte: startOfYear }
                 }
             },
@@ -68,11 +78,11 @@ export async function GET(req: NextRequest) {
 
         // 5. Expiry & Low Stock
         const nearExpiryPromise = Batch.countDocuments({
-            tenantId: tenant._id,
+            tenantId,
             expiryDate: { $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }
         });
 
-        const recentOrdersPromise = Order.find({ tenantId: tenant._id })
+        const recentOrdersPromise = Order.find({ tenantId })
             .sort({ createdAt: -1 })
             .limit(10)
             .lean(); // Use lean for faster access

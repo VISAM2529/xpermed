@@ -10,6 +10,17 @@ export interface ITenant extends Document {
     address?: string;
     gstNumber?: string;
     licenseNumber?: string;
+
+    type: 'PHARMACY' | 'DISTRIBUTOR';
+    location?: {
+        type: 'Point';
+        coordinates: [number, number];
+    };
+    distributorSettings?: {
+        minOrderAmount: number;
+        paymentTerms: string;
+    };
+
     currency: string;
     timezone: string;
     language: 'en' | 'mr'; // English or Marathi
@@ -38,6 +49,27 @@ const TenantSchema = new Schema<ITenant>(
         address: String,
         gstNumber: String,
         licenseNumber: String,
+
+        // --- Tenant Type Differentiator ---
+        type: {
+            type: String,
+            enum: ['PHARMACY', 'DISTRIBUTOR'],
+            default: 'PHARMACY',
+            index: true
+        },
+
+        // --- Geolocation for "Nearby" Search ---
+        location: {
+            type: { type: String, enum: ['Point'], default: 'Point' },
+            coordinates: { type: [Number], index: '2dsphere' } // [longitude, latitude]
+        },
+
+        // --- Distributor Specifics ---
+        distributorSettings: {
+            minOrderAmount: { type: Number, default: 0 },
+            paymentTerms: String
+        },
+
         currency: { type: String, default: 'INR' },
         timezone: { type: String, default: 'Asia/Kolkata' },
         language: { type: String, enum: ['en', 'mr'], default: 'en' },
@@ -70,7 +102,7 @@ export interface IUser extends Document {
     name: string;
     email: string;
     passwordHash: string;
-    role: 'platform_admin' | 'super_admin' | 'admin' | 'pharmacist' | 'accountant';
+    role: 'platform_admin' | 'super_admin' | 'admin' | 'pharmacist' | 'accountant' | 'salesman';
     tenantId: mongoose.Types.ObjectId; // Crucial for multi-tenancy
     permissions: string[]; // explicit permission overrides
     isActive: boolean;
@@ -84,7 +116,7 @@ const UserSchema = new Schema<IUser>(
         passwordHash: { type: String, required: true },
         role: {
             type: String,
-            enum: ['platform_admin', 'super_admin', 'admin', 'pharmacist', 'accountant'],
+            enum: ['platform_admin', 'super_admin', 'admin', 'pharmacist', 'accountant', 'salesman'],
             default: 'pharmacist',
         },
         tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true, index: true },
